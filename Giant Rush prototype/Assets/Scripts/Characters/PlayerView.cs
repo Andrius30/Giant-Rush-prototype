@@ -18,6 +18,7 @@ public class PlayerView : MonoBehaviour
 
     public void SetIdle() => animator.SetTrigger("idle");
     public void SetRun() => animator.SetTrigger("run");
+    // setBox
 
     public void ChangeColor(BodyColorTypes colorType)
     {
