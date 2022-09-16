@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ChangeColorOnTrigger : MonoBehaviour
 {
+    public bool isLastPlatform;
+
     List<BodyColorTypes> bodyColorTypes = new List<BodyColorTypes>() { BodyColorTypes.Yellow, BodyColorTypes.Green, BodyColorTypes.Red };
 
     void OnTriggerEnter(Collider other)

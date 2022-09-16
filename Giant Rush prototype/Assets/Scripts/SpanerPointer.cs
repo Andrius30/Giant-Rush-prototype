@@ -4,7 +4,7 @@ public class SpanerPointer : MonoBehaviour
 {
     public int ID;
     public bool canSpawn = true;
-
+    public bool isLastPlatformDetected;
 
     void OnTriggerEnter(Collider other)
     {
@@ -12,6 +12,10 @@ public class SpanerPointer : MonoBehaviour
         if (color != null)
         {
             canSpawn = false;
+        }
+        if (color.isLastPlatform)
+        {
+            isLastPlatformDetected = true;
         }
     }
 

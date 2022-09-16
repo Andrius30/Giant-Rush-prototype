@@ -23,16 +23,38 @@ public class CloneSpawners : MonoBehaviour
     BodyColorTypes secondColor;
     BodyColorTypes thirdColor;
 
-    List<BodyColorTypes> bodyColorList = new List<BodyColorTypes>() { BodyColorTypes.Yellow, BodyColorTypes.Green, BodyColorTypes.Red };
-    List<BodyColorTypes> pickedColors = new List<BodyColorTypes>();
-
-    bool regenerating = false;
+    Dictionary<int, List<BodyColorTypes>> colorMap = new Dictionary<int, List<BodyColorTypes>>();
+    List<BodyColorTypes> colorPattern_1 = new List<BodyColorTypes>() { BodyColorTypes.Yellow, BodyColorTypes.Green, BodyColorTypes.Red };
+    List<BodyColorTypes> colorPattern_2 = new List<BodyColorTypes>() { BodyColorTypes.Green, BodyColorTypes.Yellow, BodyColorTypes.Red };
+    List<BodyColorTypes> colorPattern_3 = new List<BodyColorTypes>() { BodyColorTypes.Green, BodyColorTypes.Red, BodyColorTypes.Yellow };
 
     void Start()
     {
         levelGenerator = LevelGenerator.Instance;
+        colorMap.Add(0, colorPattern_1);
+        colorMap.Add(1, colorPattern_2);
+        colorMap.Add(2, colorPattern_3);
         StartCoroutine(SpawnClone());
-
+    }
+    void PickRandomColorPattern()
+    {
+        int random = Random.Range(0, colorMap.Count);
+        List<BodyColorTypes> colorPattern = colorMap[random];
+        for (int i = 0; i < colorPattern.Count; i++)
+        {
+            if (i == 0)
+            {
+                firstColor = colorPattern[i];
+            }
+            else if (i == 1)
+            {
+                secondColor = colorPattern[i];
+            }
+            else
+            {
+                thirdColor = colorPattern[i];
+            }
+        }
     }
 
     public IEnumerator SpawnClone()
@@ -42,27 +64,28 @@ public class CloneSpawners : MonoBehaviour
         var secondClonePosition = new Vector3(spawnPositions[1], 0.579f, startPossition.z);
         var thirdClonePosition = new Vector3(spawnPositions[2], 0.579f, startPossition.z);
 
-        StartCoroutine(PickColor());
-        while (regenerating)
-        {
-            yield return null;
-        }
         var firstResult = CreateInitialObjects(firstClonePosition, firstColor);
         firstCloneObj = firstResult.obj;
-        //SpanerPointer firstPointer = firstResult.pointer;
 
         var secondResult = CreateInitialObjects(secondClonePosition, secondColor);
         secondCloneObj = secondResult.obj;
-        //SpanerPointer secondPointer = secondResult.pointer;
 
         var thirdResult = CreateInitialObjects(thirdClonePosition, thirdColor);
         thirdCloneObj = thirdResult.obj;
-        //SpanerPointer thirdPointer = secondResult.pointer;
-
+        PickRandomColorPattern();
         var distance = (startPossition - levelGenerator.EndColider.position).magnitude;
         while (distance > stopDistance)
         {
             var fResult = CreateClone(0, firstCloneObj.transform.position, ref firstResult.obj, ref firstClonePos, firstColor); // first
+            if (!fResult.pointer.canSpawn)
+            {
+                PickRandomColorPattern();
+            }
+            if (fResult.pointer.isLastPlatformDetected)
+            {
+                // randomize spawn
+                Debug.Log($"Randomize colors");
+            }
             CreateClone(1, secondCloneObj.transform.position, ref secondResult.obj, ref secondClonePos, secondColor); // second
             CreateClone(2, thirdCloneObj.transform.position, ref thirdResult.obj, ref thirdClonePos, thirdColor); // third
 
@@ -73,38 +96,6 @@ public class CloneSpawners : MonoBehaviour
         }
     }
 
-    IEnumerator PickColor()
-    {
-        var fRandColor = Random.Range(0, bodyColorList.Count);
-        firstColor = bodyColorList[fRandColor];
-        pickedColors.Add(firstColor);
-        var sRandColor = Random.Range(0, bodyColorList.Count);
-        secondColor = bodyColorList[sRandColor];
-        while (pickedColors.Contains(secondColor))
-        {
-            regenerating = true;
-            sRandColor = Random.Range(0, bodyColorList.Count);
-            secondColor = bodyColorList[sRandColor];
-            yield return null;
-        }
-        pickedColors.Add(secondColor);
-        if (pickedColors.Contains(BodyColorTypes.Yellow) && pickedColors.Contains(BodyColorTypes.Green))
-        {
-            thirdColor = BodyColorTypes.Red;
-            pickedColors.Add(thirdColor);
-        }
-        else if (pickedColors.Contains(BodyColorTypes.Yellow) && pickedColors.Contains(BodyColorTypes.Red))
-        {
-            thirdColor = BodyColorTypes.Green;
-            pickedColors.Add(thirdColor);
-        }
-        else if (pickedColors.Contains(BodyColorTypes.Green) && pickedColors.Contains(BodyColorTypes.Red))
-        {
-            thirdColor = BodyColorTypes.Yellow;
-            pickedColors.Add(thirdColor);
-        }
-        regenerating = false;
-    }
     (Vector3 position, SpanerPointer pointer) CreateClone(int index, Vector3 objPosition, ref GameObject cloneObj, ref Vector3 objPos, BodyColorTypes colorType)
     {
         var position = new Vector3(spawnPositions[index], 0.579f, objPosition.z + distanceBetweenClones);
@@ -114,10 +105,6 @@ public class CloneSpawners : MonoBehaviour
         {
             Clone clone = Instantiate(clonePrefab, cloneObj.transform.position, Quaternion.identity);
             clone.SetColor(colorType);
-        }
-        else
-        {
-            StartCoroutine(PickColor());
         }
         objPos = cloneObj.transform.position;
         return (position, pointer);

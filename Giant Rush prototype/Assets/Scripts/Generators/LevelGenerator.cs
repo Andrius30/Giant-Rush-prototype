@@ -23,6 +23,7 @@ public class LevelGenerator : MonoBehaviour
     {
         Instance = this;
     }
+    Vector3 lastPlatformPosition;
 
     void Start()
     {
@@ -47,6 +48,13 @@ public class LevelGenerator : MonoBehaviour
                 platform.transform.position = new Vector3(0, 0, previousePlatform.transform.position.z + distanceBetweenPlatforms);
                 previousePlatform = platform;
                 previousePlatform.transform.position = platform.transform.position;
+                if(i == changeColorPlatformCount - 1)
+                {
+                    lastPlatformPosition = platform.transform.position; 
+                    ChangeColorOnTrigger changeColorOnTrigger = platform.GetComponentInChildren<ChangeColorOnTrigger>();
+                    changeColorOnTrigger.isLastPlatform = true;
+
+                }
             }
         }
         endCollider.transform.position = new Vector3(0, 1.72f, scaleZ);
@@ -54,17 +62,13 @@ public class LevelGenerator : MonoBehaviour
         Initialized = true;
     }
 
-    //void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
 
-    //    if (previousePlatform != null)
-    //    {
-    //        Gizmos.DrawWireSphere(previousePlatform.transform.position, 1f);
-    //        Gizmos.DrawLine(previousePlatform.transform.position, platform.transform.position);
-    //        var distance = (previousePlatform.transform.position - platform.transform.position).magnitude;
-    //        Handles.color = Color.green;
-    //        Handles.Label(new Vector3(0, 0, previousePlatform.transform.position.z + (distance / 2)), $"Distance: {distance}");
-    //    }
-    //}
+        if (lastPlatformPosition != null)
+        {
+            Gizmos.DrawWireSphere(lastPlatformPosition, 5f);
+        }
+    }
 }
