@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
+    public static LevelGenerator Instance;
+
+    public Transform LongTrack => longTrack;
+    public Transform EndColider => endCollider.transform;
     [SerializeField] Transform longTrack;
     [SerializeField] GameObject changeColorPlatformPrefab;
     [SerializeField] EndCollider endCollider;
@@ -13,6 +17,11 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] float distanceBetweenPlatforms;
     GameObject previousePlatform;
     GameObject platform;
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
