@@ -6,7 +6,7 @@ public class CloneSpawners : MonoBehaviour
 {
     [SerializeField] Clone clonePrefab;
     [SerializeField] List<float> spawnPositions;
-    [SerializeField] float spawnOffset;
+    [SerializeField] Vector3 spawnOffset;
     [SerializeField] float distanceBetweenClones = 5f;
     [SerializeField] float stopDistance = 10f;
 
@@ -19,6 +19,15 @@ public class CloneSpawners : MonoBehaviour
     GameObject thirdCloneObj;
     static int lastID;
 
+    BodyColorTypes firstColor;
+    BodyColorTypes secondColor;
+    BodyColorTypes thirdColor;
+
+    List<BodyColorTypes> bodyColorList = new List<BodyColorTypes>() { BodyColorTypes.Yellow, BodyColorTypes.Green, BodyColorTypes.Red };
+    List<BodyColorTypes> pickedColors = new List<BodyColorTypes>();
+
+    bool regenerating = false;
+
     void Start()
     {
         levelGenerator = LevelGenerator.Instance;
@@ -28,39 +37,74 @@ public class CloneSpawners : MonoBehaviour
 
     public IEnumerator SpawnClone()
     {
-        var startPossition = levelGenerator.LongTrack.transform.position;
+        var startPossition = Vector3.zero + spawnOffset;
+        var firstClonePosition = new Vector3(spawnPositions[0], 0.579f, startPossition.z);
+        var secondClonePosition = new Vector3(spawnPositions[1], 0.579f, startPossition.z);
+        var thirdClonePosition = new Vector3(spawnPositions[2], 0.579f, startPossition.z);
+
+        StartCoroutine(PickColor());
+        while (regenerating)
+        {
+            yield return null;
+        }
+        var firstResult = CreateInitialObjects(firstClonePosition, firstColor);
+        firstCloneObj = firstResult.obj;
+        //SpanerPointer firstPointer = firstResult.pointer;
+
+        var secondResult = CreateInitialObjects(secondClonePosition, secondColor);
+        secondCloneObj = secondResult.obj;
+        //SpanerPointer secondPointer = secondResult.pointer;
+
+        var thirdResult = CreateInitialObjects(thirdClonePosition, thirdColor);
+        thirdCloneObj = thirdResult.obj;
+        //SpanerPointer thirdPointer = secondResult.pointer;
 
         var distance = (startPossition - levelGenerator.EndColider.position).magnitude;
-
-        var firstClonePosition = new Vector3(spawnPositions[0], 0.579f, levelGenerator.LongTrack.position.z + spawnOffset);
-        var secondClonePosition = new Vector3(spawnPositions[1], 0.579f, levelGenerator.LongTrack.position.z + spawnOffset);
-        var thirdClonePosition = new Vector3(spawnPositions[2], 0.579f, levelGenerator.LongTrack.position.z + spawnOffset);
-
-        var firstResult = CreateInitialObjects(firstClonePosition, BodyColorTypes.Yellow);
-        firstCloneObj = firstResult.obj;
-        SpanerPointer firstPointer = firstResult.pointer;
-
-        var secondResult = CreateInitialObjects(secondClonePosition, BodyColorTypes.Green);
-        secondCloneObj = secondResult.obj;
-        SpanerPointer secondPointer = secondResult.pointer;
-
-        var thirdResult = CreateInitialObjects(thirdClonePosition, BodyColorTypes.Red);
-        thirdCloneObj = thirdResult.obj;
-        SpanerPointer thirdPointer = secondResult.pointer;
-
         while (distance > stopDistance)
         {
-            var fResult = CreateClone(0, firstCloneObj.transform.position, ref firstResult.obj, ref firstClonePos, BodyColorTypes.Yellow); // first
-            var sResult = CreateClone(1, secondCloneObj.transform.position, ref secondResult.obj, ref secondClonePos, BodyColorTypes.Green); // second
-            var tResult = CreateClone(2, thirdCloneObj.transform.position, ref thirdResult.obj, ref thirdClonePos, BodyColorTypes.Red); // third
+            var fResult = CreateClone(0, firstCloneObj.transform.position, ref firstResult.obj, ref firstClonePos, firstColor); // first
+            CreateClone(1, secondCloneObj.transform.position, ref secondResult.obj, ref secondClonePos, secondColor); // second
+            CreateClone(2, thirdCloneObj.transform.position, ref thirdResult.obj, ref thirdClonePos, thirdColor); // third
 
             distance = (fResult.position - levelGenerator.EndColider.position).magnitude;
 
-            //yield return new WaitForSeconds(.3f);
-            yield return null;
+            //yield return null;
+            yield return new WaitForSeconds(.1f);
         }
     }
 
+    IEnumerator PickColor()
+    {
+        var fRandColor = Random.Range(0, bodyColorList.Count);
+        firstColor = bodyColorList[fRandColor];
+        pickedColors.Add(firstColor);
+        var sRandColor = Random.Range(0, bodyColorList.Count);
+        secondColor = bodyColorList[sRandColor];
+        while (pickedColors.Contains(secondColor))
+        {
+            regenerating = true;
+            sRandColor = Random.Range(0, bodyColorList.Count);
+            secondColor = bodyColorList[sRandColor];
+            yield return null;
+        }
+        pickedColors.Add(secondColor);
+        if (pickedColors.Contains(BodyColorTypes.Yellow) && pickedColors.Contains(BodyColorTypes.Green))
+        {
+            thirdColor = BodyColorTypes.Red;
+            pickedColors.Add(thirdColor);
+        }
+        else if (pickedColors.Contains(BodyColorTypes.Yellow) && pickedColors.Contains(BodyColorTypes.Red))
+        {
+            thirdColor = BodyColorTypes.Green;
+            pickedColors.Add(thirdColor);
+        }
+        else if (pickedColors.Contains(BodyColorTypes.Green) && pickedColors.Contains(BodyColorTypes.Red))
+        {
+            thirdColor = BodyColorTypes.Yellow;
+            pickedColors.Add(thirdColor);
+        }
+        regenerating = false;
+    }
     (Vector3 position, SpanerPointer pointer) CreateClone(int index, Vector3 objPosition, ref GameObject cloneObj, ref Vector3 objPos, BodyColorTypes colorType)
     {
         var position = new Vector3(spawnPositions[index], 0.579f, objPosition.z + distanceBetweenClones);
@@ -68,8 +112,12 @@ public class CloneSpawners : MonoBehaviour
         var pointer = cloneObj.GetComponent<SpanerPointer>();
         if (pointer.canSpawn)
         {
-            Clone firstClone = Instantiate(clonePrefab, cloneObj.transform.position, Quaternion.identity);
-            firstClone.SetColor(colorType);
+            Clone clone = Instantiate(clonePrefab, cloneObj.transform.position, Quaternion.identity);
+            clone.SetColor(colorType);
+        }
+        else
+        {
+            StartCoroutine(PickColor());
         }
         objPos = cloneObj.transform.position;
         return (position, pointer);
@@ -80,6 +128,7 @@ public class CloneSpawners : MonoBehaviour
         GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
         var rb = obj.AddComponent<Rigidbody>();
         rb.isKinematic = true;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         SpanerPointer pointer = obj.AddComponent<SpanerPointer>();
         pointer.ID = lastID;
         lastID++;

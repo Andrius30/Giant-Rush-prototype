@@ -17,6 +17,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] float distanceBetweenPlatforms;
     GameObject previousePlatform;
     GameObject platform;
+    public bool Initialized;
 
     void Awake()
     {
@@ -25,6 +26,7 @@ public class LevelGenerator : MonoBehaviour
 
     void Start()
     {
+        Initialized = false;
         distanceBetweenPlatforms = scaleZ / (changeColorPlatformCount + 1);
         var scale = longTrack.localScale;
         scale.z = scaleZ;
@@ -49,6 +51,7 @@ public class LevelGenerator : MonoBehaviour
         }
         endCollider.transform.position = new Vector3(0, 1.72f, scaleZ);
         bossCircle.position = new Vector3(0, 0.48f, scaleZ + 4f);
+        Initialized = true;
     }
 
     //void OnDrawGizmos()

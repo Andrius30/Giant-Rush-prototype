@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 71428884889599184}
   - component: {fileID: 71428884889599196}
   - component: {fileID: 71428884889599197}
-  - component: {fileID: 71428884889599186}
   - component: {fileID: 71428884889599187}
+  - component: {fileID: 6698348187999253943}
   m_Layer: 0
   m_Name: ChangeColorCollider
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 71428884889599185}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 3.69, z: 0}
-  m_LocalScale: {x: 1, y: 3.2238, z: 1}
+  m_LocalScale: {x: 0.8, y: 3.2238, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 71428885002608146}
@@ -85,20 +85,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &71428884889599186
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 71428884889599185}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!114 &71428884889599187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,6 +97,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 164a241aaf99f0f44b17342cc6d18cc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &6698348187999253943
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 71428884889599185}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0000002, y: 2, z: 1.0572374}
+  m_Center: {x: 0.000000049670536, y: 0, z: -0.23798406}
 --- !u!1 &71428885002608147
 GameObject:
   m_ObjectHideFlags: 0
