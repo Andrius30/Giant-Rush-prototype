@@ -7,6 +7,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public static Action onEndReached;
+    public static Action onCameraTargetUpdate;
 
     [SerializeField] float cameraFallowSpeed;
     [SerializeField] Vector3 cameraOffset;
@@ -30,6 +31,11 @@ public class CameraController : MonoBehaviour
         target = StaticFunctions.FindChild(player.transform, "Target");
         endCameraTransform = StaticFunctions.FindChild(player.transform, "CameraEndPosition");
     }
+    void UpdateTargetPosition()
+    {
+        var currentScale = player.transform.localScale / 2;
+        target.transform.localPosition = new Vector3(0, currentScale.y, -currentScale.z);
+    }
     void MoveAndRotateCamera() => StartCoroutine(MoveCameraRoutine());
     IEnumerator MoveCameraRoutine()
     {
@@ -46,12 +52,14 @@ public class CameraController : MonoBehaviour
     {
         PlayerController.onPlayerSpawn += SetTarget;
         onEndReached += MoveAndRotateCamera;
+        onCameraTargetUpdate += UpdateTargetPosition;
     }
 
     void OnDisable()
     {
         PlayerController.onPlayerSpawn -= SetTarget;
         onEndReached -= MoveAndRotateCamera;
+        onCameraTargetUpdate -= UpdateTargetPosition;
 
     }
 }

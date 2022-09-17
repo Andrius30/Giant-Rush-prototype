@@ -41,10 +41,10 @@ public class PlayerView : MonoBehaviour
 
     public void IncreasePlayerScale()
     {
-        transform.localScale = new Vector3(transform.localScale.x + .05f, transform.localScale.y + .05f, transform.localScale.z + .05f);
+        transform.root.localScale = new Vector3(transform.root.localScale.x + .05f, transform.root.localScale.y + .05f, transform.root.localScale.z + .05f);
     }
     public void DecreasePlayerScale()
     {
-        transform.localScale = new Vector3(transform.localScale.x - .05f, transform.localScale.y - .05f, transform.localScale.z - .05f);
+        transform.root.localScale = new Vector3(transform.root.localScale.x - .05f, transform.root.localScale.y - .05f, transform.root.localScale.z - .05f);
     }
 }

@@ -36,14 +36,15 @@ public class Clone : MonoBehaviour
             {
                 controller.playerView.IncreasePlayerScale();
                 controller.IncreasePlayerStrengh();
-                controller.UpdateTargetPosition();
+                CameraController.onCameraTargetUpdate?.Invoke();
                 Destroy(gameObject);
             }
             else
             {
                 controller.playerView.DecreasePlayerScale();
                 controller.DecreasePlayerStrengh();
-                controller.UpdateTargetPosition();
+                CameraController.onCameraTargetUpdate?.Invoke();
+                Destroy(gameObject);
             }
         }
     }

@@ -10,7 +10,7 @@ public class ChangeColorOnTrigger : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        PlayerView view = other.GetComponent<PlayerView>();
+        PlayerView view = other.GetComponentInChildren<PlayerView>();
         if (view != null)
         {
            StartCoroutine(RegenerateColorRoutine(view));
