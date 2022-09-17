@@ -1148,6 +1148,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5319021851412098143}
   - component: {fileID: 5319021851412098140}
+  - component: {fileID: 1432592080487179345}
   m_Layer: 0
   m_Name: Clone
   m_TagString: Untagged
@@ -1190,6 +1191,20 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 4c426288d9508ce419b70a6d5ef67206, type: 2}
   - {fileID: 2100000, guid: b272790e2da298f4da5562410e7559f8, type: 2}
   skinnedMeshRenderer: {fileID: 6885425301590461675}
+--- !u!136 &1432592080487179345
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4799472287390971621}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.16964614
+  m_Height: 1.5522236
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.67190856, z: 0.036618114}
 --- !u!1 &5468903697205666708
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ public class Clone : MonoBehaviour
         switch (bodyColor)
         {
             case BodyColorTypes.Yellow:
-               this.bodyColor = BodyColorTypes.Yellow;
+                this.bodyColor = BodyColorTypes.Yellow;
                 skinnedMeshRenderer.material = bodyMaterials[0];
                 break;
             case BodyColorTypes.Green:
@@ -24,6 +24,27 @@ public class Clone : MonoBehaviour
                 this.bodyColor = BodyColorTypes.Red;
                 skinnedMeshRenderer.material = bodyMaterials[2];
                 break;
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == 8)
+        {
+            PlayerController controller = other.GetComponent<PlayerController>();
+            if (controller.playerView.currentBodyColor == bodyColor)
+            {
+                controller.playerView.IncreasePlayerScale();
+                controller.IncreasePlayerStrengh();
+                controller.UpdateTargetPosition();
+                Destroy(gameObject);
+            }
+            else
+            {
+                controller.playerView.DecreasePlayerScale();
+                controller.DecreasePlayerStrengh();
+                controller.UpdateTargetPosition();
+            }
         }
     }
 }

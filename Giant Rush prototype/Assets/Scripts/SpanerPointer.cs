@@ -9,11 +9,16 @@ public class SpanerPointer : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         ChangeColorOnTrigger color = other.GetComponent<ChangeColorOnTrigger>();
+        EndCollider collider = other.GetComponent<EndCollider>();
         if (color != null)
         {
             canSpawn = false;
         }
-        if (color.isLastPlatform)
+        if(collider != null)
+        {
+            canSpawn = false;
+        }
+        if (color != null && color.isLastPlatform)
         {
             isLastPlatformDetected = true;
         }

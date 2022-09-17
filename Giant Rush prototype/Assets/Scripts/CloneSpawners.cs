@@ -72,10 +72,16 @@ public class CloneSpawners : MonoBehaviour
 
         var thirdResult = CreateInitialObjects(thirdClonePosition, thirdColor);
         thirdCloneObj = thirdResult.obj;
+
         PickRandomColorPattern();
         var distance = (startPossition - levelGenerator.EndColider.position).magnitude;
         while (distance > stopDistance)
         {
+            for (int i = 0; i < colorMap.Count; i++)
+            {
+                PickRandomColorPattern();
+                yield return new WaitForSeconds(.1f);
+            }
             var fResult = CreateClone(0, firstCloneObj.transform.position, ref firstResult.obj, ref firstClonePos, firstColor); // first
             if (!fResult.pointer.canSpawn)
             {
@@ -83,8 +89,11 @@ public class CloneSpawners : MonoBehaviour
             }
             if (fResult.pointer.isLastPlatformDetected)
             {
-                // randomize spawn
-                Debug.Log($"Randomize colors");
+                foreach (var item in colorMap)
+                {
+                    PickRandomColorPattern();
+                    yield return new WaitForSeconds(.1f);
+                }
             }
             CreateClone(1, secondCloneObj.transform.position, ref secondResult.obj, ref secondClonePos, secondColor); // second
             CreateClone(2, thirdCloneObj.transform.position, ref thirdResult.obj, ref thirdClonePos, thirdColor); // third
@@ -95,7 +104,6 @@ public class CloneSpawners : MonoBehaviour
             yield return new WaitForSeconds(.1f);
         }
     }
-
     (Vector3 position, SpanerPointer pointer) CreateClone(int index, Vector3 objPosition, ref GameObject cloneObj, ref Vector3 objPos, BodyColorTypes colorType)
     {
         var position = new Vector3(spawnPositions[index], 0.579f, objPosition.z + distanceBetweenClones);
@@ -103,7 +111,7 @@ public class CloneSpawners : MonoBehaviour
         var pointer = cloneObj.GetComponent<SpanerPointer>();
         if (pointer.canSpawn)
         {
-            Clone clone = Instantiate(clonePrefab, cloneObj.transform.position, Quaternion.identity);
+            Clone clone = Instantiate(clonePrefab, cloneObj.transform.position, new Quaternion(0, 180, 0, 0));
             clone.SetColor(colorType);
         }
         objPos = cloneObj.transform.position;
@@ -113,19 +121,27 @@ public class CloneSpawners : MonoBehaviour
     {
         Clone clone = null;
         GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        var rb = obj.AddComponent<Rigidbody>();
-        rb.isKinematic = true;
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        SetComponents(obj);
         SpanerPointer pointer = obj.AddComponent<SpanerPointer>();
         pointer.ID = lastID;
         lastID++;
         if (pointer.canSpawn)
         {
             obj.transform.position = firstClonePosition;
-            clone = Instantiate(clonePrefab, obj.transform.position, Quaternion.identity);
+            clone = Instantiate(clonePrefab, obj.transform.position, new Quaternion(0, 180, 0, 0));
             clone.SetColor(colorType);
         }
 
         return (obj, pointer);
+    }
+    void SetComponents(GameObject obj)
+    {
+        MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
+        renderer.enabled = false;
+        BoxCollider boxCollider = obj.GetComponent<BoxCollider>();
+        boxCollider.isTrigger = true;
+        var rb = obj.AddComponent<Rigidbody>();
+        rb.isKinematic = true;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 }

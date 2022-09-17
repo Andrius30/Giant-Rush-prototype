@@ -1,21 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static Action<PlayerController> onPlayerSpawn;
+
     public float moveSpeed = 5f;
     public float lerpSpeed;
-    public float cameraLerpSpeed = 5f;
     public float reduceSpeedRatio = 0.3f;
 
+    [SerializeField] int currentStrengh = 0;
     [SerializeField] Camera mainCamera;
-    [SerializeField] Transform endCameraTransform;
     [SerializeField] List<float> movePositions;
-
-    [SerializeField] PlayerView playerView; // controlls visuals
+    [SerializeField] Transform cameraTarget;
+    public PlayerView playerView; // controlls visuals
     int currentPositionIndex = 0;
 
+    void Start()
+    {
+        onPlayerSpawn?.Invoke(this);
+    }
 
     void Update()
     {
@@ -41,11 +47,18 @@ public class PlayerController : MonoBehaviour
         MoveForward();
     }
 
-    void MoveForward() => transform.Translate(transform.forward * moveSpeed * Time.deltaTime);
+    public void IncreasePlayerStrengh() => currentStrengh++;
+    public void DecreasePlayerStrengh() => currentStrengh--;
+    public void UpdateTargetPosition()
+    {
+        var currentScale = transform.localScale / 2;
+        cameraTarget.transform.localPosition = new Vector3(0, currentScale.y, -currentScale.z);
+    }
 
+    void MoveForward() => transform.Translate(transform.forward * moveSpeed * Time.deltaTime);
     IEnumerator ReduceSpeedRoutine()
     {
-        StartCoroutine(MoveCameraRoutine());
+        CameraController.onEndReached?.Invoke();
         while (moveSpeed > 0)
         {
             moveSpeed -= reduceSpeedRatio;
@@ -56,15 +69,7 @@ public class PlayerController : MonoBehaviour
         // start boss fight
     }
 
-    IEnumerator MoveCameraRoutine()
-    {
-        while (mainCamera.transform.position != endCameraTransform.position && mainCamera.transform.rotation != endCameraTransform.rotation)
-        {
-            mainCamera.transform.rotation = Quaternion.Slerp(mainCamera.transform.rotation, endCameraTransform.rotation, cameraLerpSpeed * Time.deltaTime);
-            mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, endCameraTransform.position, cameraLerpSpeed * Time.deltaTime);
-            yield return null;
-        }
-    }
+
 
     void OnTriggerEnter(Collider other)
     {

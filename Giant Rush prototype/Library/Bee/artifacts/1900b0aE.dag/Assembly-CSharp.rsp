@@ -351,6 +351,8 @@
 -r:"Library/Bee/artifacts/1900b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEngine.UI.ref.dll"
+"Assets/Scripts/BossArea.cs"
+"Assets/Scripts/Cameras/CameraController.cs"
 "Assets/Scripts/ChangeColorOnTrigger.cs"
 "Assets/Scripts/Characters/Clone.cs"
 "Assets/Scripts/Characters/PlayerController.cs"
@@ -359,7 +361,11 @@
 "Assets/Scripts/EndCollider.cs"
 "Assets/Scripts/Generators/LevelGenerator.cs"
 "Assets/Scripts/SpanerPointer.cs"
-"Assets/Scripts/Utils/StaticFunctions.cs"
+"Assets/Scripts/Utils/Core/MyPropertyDrawer.cs"
+"Assets/Scripts/Utils/Core/ReadonlyAttribute.cs"
+"Assets/Scripts/Utils/Core/StaticFunctions.cs"
+"Assets/Scripts/Utils/Core/StringEx.cs"
+"Assets/Scripts/Utils/Core/Timer.cs"
 -langversion:9.0
 
 /deterministic
