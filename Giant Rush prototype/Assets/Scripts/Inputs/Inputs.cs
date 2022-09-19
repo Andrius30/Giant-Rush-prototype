@@ -6,19 +6,21 @@ public class Inputs
     public bool RightInput() => Input.GetKeyDown(KeyCode.D);
     public bool LeftMouseInputDown() => Input.GetKeyDown(KeyCode.Mouse0);
     public bool LeftMouseInputUp() => Input.GetKeyUp(KeyCode.Mouse0);
-    
-    
+
+
     // TOUCH INPUTS ========================
     Vector2 fingerStart;
     float swipeDetectionDistance = 80;
     bool fingerDown;
     public bool swipeLeft;
     public bool swipeRight;
+    public bool isTouching;
 
     public void DetectTouches()
     {
         swipeLeft = false;
         swipeRight = false;
+        isTouching = false;
         if (LeftMouseInputDown() && Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
         {
             fingerStart = Input.touches[0].position;
@@ -43,7 +45,18 @@ public class Inputs
 
             }
         }
-
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if(touch.phase == TouchPhase.Began)
+            {
+                isTouching = true;
+            }
+            if(touch.phase == TouchPhase.Ended)
+            {
+                isTouching = false;
+            }
+        }
     }
 
     // =====================================

@@ -35,14 +35,14 @@ public class Clone : MonoBehaviour
             if (controller.playerView.currentBodyColor == bodyColor)
             {
                 controller.playerView.IncreasePlayerScale();
-                controller.IncreasePlayerStrengh();
+                controller.playerModel.IncreasePlayerStrengh();
                 CameraController.onCameraTargetUpdate?.Invoke();
                 Destroy(gameObject);
             }
             else
             {
                 controller.playerView.DecreasePlayerScale();
-                controller.DecreasePlayerStrengh();
+                controller.playerModel.DecreasePlayerStrengh();
                 CameraController.onCameraTargetUpdate?.Invoke();
                 Destroy(gameObject);
             }

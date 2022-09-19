@@ -30,7 +30,11 @@ public class PlayerModel
         currentPosition.x = controller.MovePositions[controller.currentPositionIndex];
         controller.transform.position = Vector3.Lerp(controller.transform.position, currentPosition, controller.lerpSpeed * Time.deltaTime);
     }
-    public void MoveForward() => controller.transform.Translate(controller.transform.forward * controller.moveSpeed * Time.deltaTime);
+    public void MoveForward()
+    {
+        controller.transform.Translate(controller.transform.forward * controller.moveSpeed * Time.deltaTime);
+        controller.playerView.SetRun();
+    }
     public IEnumerator ReduceSpeedRoutine()
     {
         CameraController.onEndReached?.Invoke();
@@ -40,7 +44,8 @@ public class PlayerModel
             yield return null;
         }
         controller.moveSpeed = 0;
-        controller.playerView.SetIdle();
         // start boss fight
     }
+    public void IncreasePlayerStrengh() => controller.currentStrengh++;
+    public void DecreasePlayerStrengh() => controller.currentStrengh--;
 }

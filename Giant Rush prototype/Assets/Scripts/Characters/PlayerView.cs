@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,9 +17,10 @@ public class PlayerView : MonoBehaviour
     [SerializeField] List<Material> bodyMaterials;
     [SerializeField] SkinnedMeshRenderer bodyRenderer;
 
-    public void SetIdle() => animator.SetTrigger("idle");
     public void SetRun() => animator.SetTrigger("run");
-    // setBox
+    public void PlayBoxingIdle() => animator.SetTrigger("boxingIdle");
+    public void PlayBoxing() => animator.SetTrigger("boxing");
+    public void SetBoxingIdle() => animator.SetTrigger("boxingIdle");
 
     public void ChangeColor(BodyColorTypes colorType)
     {
@@ -47,4 +49,5 @@ public class PlayerView : MonoBehaviour
     {
         transform.root.localScale = new Vector3(transform.root.localScale.x - .05f, transform.root.localScale.y - .05f, transform.root.localScale.z - .05f);
     }
+
 }

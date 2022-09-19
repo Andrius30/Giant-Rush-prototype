@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,53 +11,79 @@ public class PlayerController : MonoBehaviour
     public float reduceSpeedRatio = 0.3f;
     public PlayerView playerView; // controlls visuals
 
-    [SerializeField] int currentStrengh = 0;
     [SerializeField] Camera mainCamera;
     [SerializeField] List<float> movePositions;
 
+    public int currentStrengh = 0; // FIXME: to property after debuging done
     public int currentPositionIndex { get; set; }
     public List<float> MovePositions => movePositions;
 
     public PlayerModel playerModel { get; private set; }
     public Inputs Inputs { get; private set; }
+    bool endReached;
 
     void Start()
     {
         onPlayerSpawn?.Invoke(this);
         playerModel = new PlayerModel(this);
         Inputs = new Inputs();
+        endReached = false;
     }
     void Update()
     {
+        // When boss area reached disable these inputs and enable other type of inputs for example: Doge inputs ( Left/Right, Tap screen to attack, ... )
         Vector3 currentPosition = transform.position;
 #if UNITY_EDITOR
-        if (Inputs.LeftInput())
+        if (!endReached && Inputs.LeftInput())
         {
             playerModel.MoveLeft();
         }
-        else if (Inputs.RightInput())
+        else if (!endReached && Inputs.RightInput())
         {
             playerModel.MoveRight();
+        }
+        else if (endReached && Inputs.LeftMouseInputDown())
+        {
+            playerView.PlayBoxing();
         }
 #endif
 #if UNITY_ANDROID
         Inputs.DetectTouches();
-        if (Inputs.swipeLeft)
+        if (!endReached && Inputs.swipeLeft)
         {
             playerModel.MoveLeft();
         }
-        else if (Inputs.swipeRight)
+        else if (!endReached && Inputs.swipeRight)
         {
             playerModel.MoveRight();
         }
+        else if (endReached && Inputs.isTouching)
+        {
+            playerView.PlayBoxing();
+        }
+        else if (endReached && !Inputs.isTouching)
+        {
+            playerView.SetBoxingIdle();
+        }
 #endif
-        playerModel.LerpPosition(currentPosition);
-        playerModel.MoveForward();
+        if (!endReached)
+        {
+            playerModel.LerpPosition(currentPosition);
+            playerModel.MoveForward();
+        }
     }
 
-    public void IncreasePlayerStrengh() => currentStrengh++;
-    public void DecreasePlayerStrengh() => currentStrengh--;
+    void OnEndReached() => endReached = true;
 
+    void OnEnable()
+    {
+        EndCollider.onEndReached += OnEndReached;
+    }
+    void OnDisable()
+    {
+        EndCollider.onEndReached -= OnEndReached;
+
+    }
 
     void OnTriggerEnter(Collider other)
     {
